@@ -1,4 +1,4 @@
-const _ = require('lodash');
+import _ = require('lodash');
 
 function component () {
   var element = document.createElement('div');
@@ -9,7 +9,7 @@ function component () {
   return element;
 }
 
-document.body.appendChild(component());
+//document.body.appendChild(component());
 
 //配列の作成
 var R = new Array();
@@ -31,6 +31,8 @@ const GR2 = [181, 181, 156, 255];
 var W = 16;
 var H = 20;
 
+var flag: boolean = false;
+
 function main() {
   //キャンバス要素の作成
   var canvas = document.createElement("canvas");
@@ -41,7 +43,7 @@ function main() {
 
   // ImageDataオブジェクトを作成
   var imgData = ctx.createImageData(W, H);
-  var imgData2 = ctx.createImageData(W, H);
+  var imgData2 = ctx.createImageData(imgData);
 
   //データ用の配列を作成
   var data = new Array();
@@ -96,18 +98,47 @@ function main() {
     W_1, W_1, W_1, B_1, GR1, GR2, GR2, GR1, B_1, W_1, W_1, W_1, W_1, W_1, W_1, W_1
   );
 
-    //イメージデータにRGBの値を入れる
-    var i = 0;
-    for (i = 0; i < 4 * W * H; i++) {
-      imgData.data[i] = data[i];
-    }
-    for (i = 0; i < 4 * W * H; i++) {
-      imgData2.data[i] = data2[i];
-    }
-
-    //イメージデータを出力
-    ctx.putImageData(imgData, 0, 0);
-    ctx.putImageData(imgData2, 20, 0);
+  //イメージデータにRGBの値を入れる
+  var i = 0;
+  for (i = 0; i < 4 * W * H; i++) {
+    imgData.data[i] = data[i];
+  }
+  for (i = 0; i < 4 * W * H; i++) {
+    imgData2.data[i] = data2[i];
   }
 
-  main();
+  //イメージデータを出力
+  ctx.putImageData(imgData, 0, 5);
+  flag = true;
+
+/*
+  setInterval(function() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (flag) {
+      ctx.putImageData(imgData2, 0, 0);
+    } else {
+      ctx.putImageData(imgData, 0, 0);
+    }
+    flag = !flag;
+  }, 1000);
+  */
+  var startTime = new Date().getTime();
+  (function loop(){
+    window.requestAnimationFrame(loop);
+    var currentTime = new Date().getTime();
+    var status = (currentTime - startTime)
+    console.log(status);
+    if (status >= 1000) {
+      ctx.clearRect(0, 5, canvas.width, canvas.height);
+      if (flag) {
+        ctx.putImageData(imgData2, 0, 5);
+      } else {
+        ctx.putImageData(imgData, 0, 5);
+      }
+      flag = !flag;
+      startTime = currentTime;
+    }
+  })();
+}
+
+main();
